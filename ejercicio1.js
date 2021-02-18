@@ -11,7 +11,26 @@
 // Si queremos coger la referencia espacial también lo podemos hacwer, metiendolo como otra propiedad (extent), además de la del mapa (map)
 var myMap;
 var toggle; //Añadimos un widget para poder cambiar de mapa base
-require(["esri/map", "esri/geometry/Extent", "esri/dijit/BasemapToggle", "esri/layers/ArcGISDynamicMapServiceLayer", "esri/layers/FeatureLayer", "dojo/domReady!"], function(Map, Extent, BasemapToggle, ArcGISDynamicMapServiceLayer, FeatureLayer){
+require([
+        "esri/map", 
+        "esri/geometry/Extent", 
+        "esri/dijit/BasemapToggle", 
+        "esri/layers/ArcGISDynamicMapServiceLayer", 
+        "esri/layers/FeatureLayer", 
+        "esri/dijit/Legend",
+        "esri/dijit/BasemapGallery", 
+        
+        "dojo/parser", 
+        "dojo/on", 
+        
+        "dijit/layout/BorderContainer", 
+        "dijit/layout/ContentPane", 
+        "dijit/TitlePane",
+         "dojo/domReady!"], 
+         function(Map, Extent, BasemapToggle, ArcGISDynamicMapServiceLayer, FeatureLayer, Legend, BasemapGallery, parser, on){
+
+        parser.parse();
+
         myMap = new Map ("divMap", {
                 basemap: "topo",
                 extent: new Extent(
@@ -36,14 +55,32 @@ require(["esri/map", "esri/geometry/Extent", "esri/dijit/BasemapToggle", "esri/l
          //  }, "LocateButton");
          //  geoLocate.startup();
 
-         var ArcGISDynamicMapServiceLayer = new ArcGISDynamicMapServiceLayer ("http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer");
-         myMap.addLayer(ArcGISDynamicMapServiceLayer);
-         ArcGISDynamicMapServiceLayer.setOpacity(0.25);
+         var mapserver = new ArcGISDynamicMapServiceLayer ("http://sampleserver6.arcgisonline.com/arcgis/rest/services/USA/MapServer");
+         myMap.addLayer(mapserver);
+         mapserver.setOpacity(0.25);
          
 
-         var FeatureLayer = new FeatureLayer("https://services.arcgis.com/ue9rwulIoeLEI9bj/arcgis/rest/services/Earthquakes/FeatureServer/0");
-         myMap.addLayer(FeatureLayer);
-         FeatureLayer.setDefinitionExpression("MAGNITUDE >= '2'");
+         var terremotos = new FeatureLayer("https://services.arcgis.com/ue9rwulIoeLEI9bj/arcgis/rest/services/Earthquakes/FeatureServer/0");
+         myMap.addLayer(terremotos);
+         terremotos.setDefinitionExpression("MAGNITUDE >= '2'");
+
+         var leyenda = new Legend ({
+                 map: myMap,
+         }, "leyenda");
+         leyenda.startup();
+
+         var mapabase = new BasemapGallery({
+         showArcGISBasemaps: true,
+         map: myMap
+         }, "mapabase");
+        mapabase.startup();
+
+        //Evento para que cuando se cargen las capas, se ejecute la leyenda
+
+        // mapabase.on("layers-add-result", function(){
+        //         var dijitLegend
+        // })
+         
          
 
 
