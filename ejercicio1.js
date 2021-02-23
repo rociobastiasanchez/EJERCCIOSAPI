@@ -13,6 +13,16 @@ var myMap;
 var toggle; //Añadimos un widget para poder cambiar de mapa base
 require([
         "esri/map", 
+        "esri/graphic",
+        "esri/Color",
+        "esri/toolbars/draw",
+        "esri/layers/GraphicsLayer",
+        "esri/symbols/SimpleLineSymbol",
+        "esri/symbols/SimpleMarkerSymbol",
+        "esri/symbols/TextSymbol",
+        "esri/symbols/Font",
+
+        
         "esri/geometry/Extent", 
         "esri/dijit/BasemapToggle", 
         "esri/layers/ArcGISDynamicMapServiceLayer", 
@@ -21,13 +31,21 @@ require([
         "esri/dijit/BasemapGallery", 
         
         "dojo/parser", 
-        "dojo/on", 
+        "dojo/on",
+        "dojo/dom",
+        "dojo/ready",
+        "dojo/_base/Color",
+        "dojo/_base/array",
         
         "dijit/layout/BorderContainer", 
         "dijit/layout/ContentPane", 
         "dijit/TitlePane",
-         "dojo/domReady!"], 
-         function(Map, Extent, BasemapToggle, ArcGISDynamicMapServiceLayer, FeatureLayer, Legend, BasemapGallery, parser, on){
+        "dojo/domReady!"], 
+
+         function(
+                 Map, Graphic, Color, Draw, GraphicsLayer,SimpleLineSymbol, SimpleMarkerSymbol, TextSymbol, Font, 
+                 Extent, BasemapToggle, ArcGISDynamicMapServiceLayer, FeatureLayer, Legend, BasemapGallery, 
+                 parser, on, dom, readyef, array){
 
         parser.parse();
 
@@ -81,7 +99,30 @@ require([
         //         var dijitLegend
         // })
          
-         
+        //Podemos dibujar sobre el mapa
+
+        //Cuando se carge el ampa, añadimos el toolsbar
+
+        myMap.on('load', inciodibujo);
+
+        function inciodibujo(){
+            const toolbar = new Draw (myMap);
+            toolbar.activate(Draw.POLYGON);
+            toolbar.on("draw-complete", addToMap);
+        };
+
+        function addToMap (params){
+            console.log('terminé de pintar', params);
+            var simbolo = new SimpleLineSymbol(
+            SimpleLineSymbol.STYLE_SOLID,
+            new Color("blue"), 2);
+            var misgraficos = new Graphic(params.geometry,simbolo);
+            myMap.graphics.add(misgraficos)
+        };
+
+
+        //Añadimos la GraphicsLayer
+
 
 
 });
